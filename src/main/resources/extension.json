@@ -1,0 +1,5 @@
+{
+  "entrypoint": "cc.minetale.mlib.mLib",
+  "name": "mLib",
+  "mixinConfig": "mixins.extension.json"
+}
