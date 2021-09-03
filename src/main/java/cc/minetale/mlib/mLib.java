@@ -2,7 +2,7 @@ package cc.minetale.mlib;
 
 import cc.minetale.mlib.commands.SpawnNPCCommand;
 import cc.minetale.mlib.config.mLibConfig;
-import cc.minetale.mlib.guilib.GuiLib;
+import cc.minetale.mlib.fabric.Fabric;
 import cc.minetale.mlib.npc.NPC;
 import cc.minetale.mlib.npc.NPCTask;
 import cc.minetale.mlib.util.FileUtil;
@@ -33,17 +33,19 @@ public class mLib extends Extension {
     private MongoClient mongoClient;
     private MongoDatabase mongoDatabase;
     private CommonLib commonLib;
+    private Fabric fabric;
 
     @Override
     public void initialize() {
         mLib = this;
 
-        GuiLib.init();
+        this.fabric = new Fabric();
+
+        this.npcList = new ArrayList<>();
 
         MinecraftServer.getCommandManager().register(new SpawnNPCCommand());
         NPCTask.startTask();
 
-        this.npcList = new ArrayList<>();
         this.gson = new GsonBuilder().setPrettyPrinting().create();
 
         mLibConfig config = null;
