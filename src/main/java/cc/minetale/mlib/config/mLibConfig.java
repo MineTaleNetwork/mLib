@@ -8,6 +8,8 @@ public class mLibConfig {
     private String name = "Lobby-1";
     private String type = "Lobby";
 
+    private int maxPlayers = 20;
+
     private String networkId = "minetale";
 
     private String mongoHost = "127.0.0.1";

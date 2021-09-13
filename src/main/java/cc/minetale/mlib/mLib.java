@@ -67,6 +67,8 @@ public class mLib extends Extension {
             this.commonLib = new CommonLib(this.mongoClient, this.mongoDatabase, this.pigeon);
 
             this.pigeon.acceptDelivery();
+        } else {
+            System.out.println("Config was NULL in mLib");
         }
     }
 
