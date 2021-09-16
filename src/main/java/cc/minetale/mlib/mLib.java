@@ -1,6 +1,5 @@
 package cc.minetale.mlib;
 
-import cc.minetale.mlib.commands.SpawnNPCCommand;
 import cc.minetale.mlib.config.mLibConfig;
 import cc.minetale.mlib.fabric.Fabric;
 import cc.minetale.mlib.npc.NPC;
@@ -43,7 +42,6 @@ public class mLib extends Extension {
 
         this.npcList = new ArrayList<>();
 
-        MinecraftServer.getCommandManager().register(new SpawnNPCCommand());
         NPCTask.startTask();
 
         this.gson = new GsonBuilder().setPrettyPrinting().create();
