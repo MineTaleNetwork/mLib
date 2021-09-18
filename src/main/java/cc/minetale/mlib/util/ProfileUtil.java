@@ -1,7 +1,7 @@
 package cc.minetale.mlib.util;
 
-import cc.minetale.mlib.event.AsyncProfileLoadEvent;
 import cc.minetale.commonlib.modules.profile.Profile;
+import cc.minetale.mlib.event.AsyncProfileLoadEvent;
 import lombok.Getter;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.entity.Player;

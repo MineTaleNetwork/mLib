@@ -5,7 +5,6 @@ import cc.minetale.mlib.fabric.impl.IPagination;
 import cc.minetale.mlib.fabric.impl.ISlotIterator;
 
 import java.util.Arrays;
-import java.util.stream.Collectors;
 
 public class Pagination implements IPagination {
 
