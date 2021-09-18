@@ -30,8 +30,7 @@ public class NPCTask {
                     }
                 }
             }
-        }).repeat(Duration.of(20, ChronoUnit.MILLIS)).schedule();
-        System.out.println("NPC task started");
+        }).repeat(Duration.of(1, ChronoUnit.SECONDS)).schedule();
     }
 
 }
