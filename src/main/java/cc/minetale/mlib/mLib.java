@@ -21,6 +21,7 @@ import net.minestom.server.entity.Player;
 import net.minestom.server.event.EventFilter;
 import net.minestom.server.event.EventNode;
 import net.minestom.server.event.player.PlayerChatEvent;
+import net.minestom.server.event.player.PlayerDisconnectEvent;
 import net.minestom.server.event.player.PlayerEntityInteractEvent;
 import net.minestom.server.event.trait.EntityEvent;
 import net.minestom.server.extensions.Extension;
@@ -91,7 +92,7 @@ public class mLib extends Extension {
     public void terminate() {}
 
     public static EventNode<EntityEvent> events() {
-        return EventNode.type("npc-events", EventFilter.ENTITY)
+        return EventNode.type("mLib", EventFilter.ENTITY)
                 .addListener(PlayerEntityInteractEvent.class, event -> {
                     Entity target = event.getTarget();
 
