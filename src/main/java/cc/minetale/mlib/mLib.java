@@ -1,11 +1,11 @@
 package cc.minetale.mlib;
 
+import cc.minetale.commonlib.CommonLib;
 import cc.minetale.mlib.config.mLibConfig;
 import cc.minetale.mlib.fabric.Fabric;
 import cc.minetale.mlib.npc.NPC;
 import cc.minetale.mlib.npc.NPCInteraction;
 import cc.minetale.mlib.util.FileUtil;
-import cc.minetale.commonlib.CommonLib;
 import cc.minetale.pigeon.Pigeon;
 import cc.minetale.quartz.config.ConfigLoader;
 import com.google.gson.Gson;

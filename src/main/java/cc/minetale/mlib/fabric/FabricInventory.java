@@ -5,7 +5,6 @@ import cc.minetale.mlib.fabric.content.FabricProvider;
 import cc.minetale.mlib.mLib;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import net.minestom.server.entity.Player;
 import net.minestom.server.inventory.Inventory;
 import net.minestom.server.inventory.InventoryType;
