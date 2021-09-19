@@ -3,7 +3,7 @@ package cc.minetale.mlib;
 import cc.minetale.mlib.config.mLibConfig;
 import cc.minetale.mlib.fabric.Fabric;
 import cc.minetale.mlib.npc.NPC;
-import cc.minetale.mlib.npc.NPCTask;
+import cc.minetale.mlib.npc.NPCInteraction;
 import cc.minetale.mlib.util.FileUtil;
 import cc.minetale.commonlib.CommonLib;
 import cc.minetale.pigeon.Pigeon;
@@ -13,19 +13,29 @@ import com.google.gson.GsonBuilder;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoDatabase;
 import lombok.Getter;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.MinecraftServer;
+import net.minestom.server.entity.Entity;
+import net.minestom.server.entity.Player;
+import net.minestom.server.event.EventFilter;
+import net.minestom.server.event.EventNode;
+import net.minestom.server.event.player.PlayerChatEvent;
+import net.minestom.server.event.player.PlayerEntityInteractEvent;
+import net.minestom.server.event.trait.EntityEvent;
 import net.minestom.server.extensions.Extension;
+import net.minestom.server.network.packet.server.play.TeamsPacket;
+import net.minestom.server.scoreboard.Team;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 public class mLib extends Extension {
 
     @Getter private static mLib mLib;
-    private List<NPC> npcList;
+    @Getter private static Team npcTeam;
     private Gson gson;
     private mLibConfig config;
     private Pigeon pigeon;
@@ -38,13 +48,20 @@ public class mLib extends Extension {
     public void initialize() {
         mLib = this;
 
+        npcTeam = MinecraftServer.getTeamManager().createTeam(
+                "NPC-TEAM",
+                Component.text("[NPC] ", NamedTextColor.DARK_GRAY),
+                NamedTextColor.DARK_GRAY,
+                Component.empty()
+        );
+
+        npcTeam.setNameTagVisibility(TeamsPacket.NameTagVisibility.NEVER);
+
         this.fabric = new Fabric();
 
-        this.npcList = new ArrayList<>();
-
-        NPCTask.startTask();
-
         this.gson = new GsonBuilder().setPrettyPrinting().create();
+
+        MinecraftServer.getGlobalEventHandler().addChild(events());
 
         mLibConfig config = null;
 
@@ -72,6 +89,22 @@ public class mLib extends Extension {
 
     @Override
     public void terminate() {}
+
+    public static EventNode<EntityEvent> events() {
+        return EventNode.type("npc-events", EventFilter.ENTITY)
+                .addListener(PlayerEntityInteractEvent.class, event -> {
+                    Entity target = event.getTarget();
+
+                    if (!(target instanceof NPC)) {
+                        return;
+                    }
+
+                    NPC npc = (NPC) target;
+
+                    if(event.getHand() == Player.Hand.MAIN)
+                        npc.getInteraction().accept(new NPCInteraction(event.getPlayer(), npc));
+                });
+    }
 
     private void loadPigeon() {
         String host = this.config.getRabbitMqHost();

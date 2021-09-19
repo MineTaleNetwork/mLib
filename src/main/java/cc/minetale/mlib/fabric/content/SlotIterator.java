@@ -2,7 +2,7 @@ package cc.minetale.mlib.fabric.content;
 
 import cc.minetale.mlib.fabric.ClickableItem;
 import cc.minetale.mlib.fabric.FabricInventory;
-import cc.minetale.mlib.fabric.impl.ISlotIterator;
+import cc.minetale.mlib.fabric.ISlotIterator;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -1,6 +1,4 @@
-package cc.minetale.mlib.fabric.impl;
-
-import cc.minetale.mlib.fabric.ClickableItem;
+package cc.minetale.mlib.fabric;
 
 public interface IPagination {
 

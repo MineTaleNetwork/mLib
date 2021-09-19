@@ -1,100 +1,128 @@
 package cc.minetale.mlib.npc;
 
+import cc.minetale.mlib.mLib;
+import lombok.Getter;
+import lombok.Setter;
 import net.minestom.server.MinecraftServer;
-import net.minestom.server.adventure.audience.Audiences;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.*;
+import net.minestom.server.entity.metadata.PlayerMeta;
 import net.minestom.server.instance.Instance;
-import net.minestom.server.network.packet.server.play.*;
-import net.minestom.server.utils.PacketUtils;
+import net.minestom.server.network.packet.server.play.EntityHeadLookPacket;
+import net.minestom.server.network.packet.server.play.EntityRotationPacket;
+import net.minestom.server.network.packet.server.play.PlayerInfoPacket;
+import net.minestom.server.scoreboard.Team;
+import net.minestom.server.utils.time.TimeUnit;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
-import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.function.Consumer;
 
-public class NPC {
+@Getter @Setter
+public class NPC extends LivingEntity {
 
-    public Instance instance;
-    public Pos pos;
-    public NPCEntity npcEntity;
-    public HashSet<Player> viewers;
-    public int npcEntityId;
+    private Pos spawnPosition;
+    private PlayerSkin playerSkin;
+    private String username;
+    private Consumer<NPCInteraction> interaction;
 
-    public NPC(Instance instance, Pos pos, PlayerSkin playerSkin) {
-        this.instance = instance;
-        this.pos = pos;
-        this.viewers = new HashSet<>();
+    public NPC(@NotNull Instance instance, @NotNull Pos spawnPosition, @NotNull PlayerSkin playerSkin, @NotNull Consumer<NPCInteraction> interaction) {
+        super(EntityType.PLAYER);
 
-        this.npcEntity = new NPCEntity(UUID.randomUUID(), RandomStringUtils.randomAlphanumeric(8).toLowerCase());
+        this.spawnPosition = spawnPosition;
+        this.playerSkin = playerSkin;
+        this.interaction = interaction;
 
-        this.npcEntity.setInstance(instance);
-        this.npcEntityId = this.npcEntity.getEntityId();
-        this.npcEntity.setNoGravity(true);
-        this.npcEntity.setPlayerSkin(playerSkin);
+        this.username = RandomStringUtils.randomAlphanumeric(8);
+
+        this.setNoGravity(true);
+
+        PlayerMeta meta = new PlayerMeta(this, this.metadata);
+
+        meta.setCapeEnabled(true);
+        meta.setHatEnabled(true);
+        meta.setJacketEnabled(true);
+        meta.setLeftLegEnabled(true);
+        meta.setLeftSleeveEnabled(true);
+        meta.setRightLegEnabled(true);
+        meta.setRightSleeveEnabled(true);
+
+        this.entityMeta = meta;
+
+        Team team = mLib.getNpcTeam();
+
+        team.addMember(this.getUsername());
+        this.setTeam(team);
+
+        this.setAutoViewable(false);
+
+        this.setInstance(instance, spawnPosition);
     }
 
-    public void spawn(Player player) {
-        this.viewers.add(player);
+    @Override
+    protected boolean addViewer0(@NotNull Player player) {
+        player.sendPacket(this.generateAddPlayer());
 
-        this.setPos(this.pos);
+        if (!super.addViewer0(player)) {
+            return false;
+        } else {
+            lookAt(player);
 
-        PlayerInfoPacket addPlayerInfoPacket = new PlayerInfoPacket(PlayerInfoPacket.Action.ADD_PLAYER);
+            MinecraftServer.getSchedulerManager().buildTask(() -> player.sendPacket(generateRemovePlayer()))
+                    .delay(Duration.of(20, TimeUnit.SERVER_TICK))
+                    .schedule();
 
-        PlayerInfoPacket.AddPlayer addPlayer = new PlayerInfoPacket.AddPlayer(npcEntity.getUuid(), npcEntity.getUsername(), GameMode.ADVENTURE, 0);
-        PlayerInfoPacket.AddPlayer.Property property = new PlayerInfoPacket.AddPlayer.Property("textures", npcEntity.getPlayerSkin().getTextures(), npcEntity.getPlayerSkin().getSignature());
-
-        addPlayer.properties.add(property);
-
-        addPlayerInfoPacket.playerInfos.add(addPlayer);
-
-        SpawnPlayerPacket spawnPlayerPacket = new SpawnPlayerPacket();
-
-        spawnPlayerPacket.entityId = npcEntityId;
-        spawnPlayerPacket.playerUuid = npcEntity.getUuid();
-        spawnPlayerPacket.position = this.pos;
-
-        PacketUtils.sendPacket(player, addPlayerInfoPacket);
-        PacketUtils.sendPacket(player, spawnPlayerPacket);
-
-        Collection<Metadata.Entry<?>> entries = List.of(
-                new Metadata.Entry<>((byte) 17, Metadata.Byte((byte) 127))
-        );
-
-        PacketUtils.sendPacket(player, new EntityMetaDataPacket(this.npcEntityId, entries));
-
-        lookAt(player);
-
-        MinecraftServer.getSchedulerManager().buildTask(() -> {
-            PlayerInfoPacket removePlayerInfoPacket = new PlayerInfoPacket(PlayerInfoPacket.Action.REMOVE_PLAYER);
-
-            PlayerInfoPacket.RemovePlayer removePlayer = new PlayerInfoPacket.RemovePlayer(this.npcEntity.getUuid());
-            removePlayerInfoPacket.playerInfos.add(removePlayer);
-
-            PacketUtils.sendPacket(player, removePlayerInfoPacket);
-        }).delay(Duration.of(2, ChronoUnit.SECONDS)).schedule();
+            return true;
+        }
     }
 
-    public void delete(Player player) {
-        this.viewers.remove(player);
+    @Override
+    public void tick(long time) {
+        super.tick(time);
 
-        PacketUtils.sendPacket(player, new DestroyEntitiesPacket(this.npcEntityId));
+        Instance instance = this.instance;
+
+        if(this.isRemoved() || instance == null)
+            return;
+
+        for(Player player : instance.getPlayers()) {
+            boolean canSee = player.getDistance(this) <= 32;
+
+            if(this.viewers.contains(player) && !canSee) {
+                this.removeViewer(player);
+            } else if(canSee) {
+                if (!this.viewers.contains(player)) {
+                    this.addViewer(player);
+                }
+
+                this.lookAt(player);
+            }
+        }
     }
 
-    public void setPos(Pos pos) {
-        this.npcEntity.teleport(pos);
+    public void lookAt(Player player) {
+        Pos direction = this.position.withDirection(player.getPosition().sub(this.position));
 
-        updatePos(pos, true);
+        player.sendPacket(new EntityRotationPacket(this.getEntityId(), direction.yaw(), direction.pitch(), false));
+        player.sendPacket(new EntityHeadLookPacket(this.getEntityId(), direction.yaw()));
     }
 
-    private void updatePos(Pos pos, boolean onGround) {
-        PacketUtils.sendPacket(Audiences.players(), new EntityTeleportPacket(this.npcEntityId, pos, onGround));
+    public PlayerInfoPacket generateRemovePlayer() {
+        PlayerInfoPacket packet = new PlayerInfoPacket(PlayerInfoPacket.Action.REMOVE_PLAYER);
+        packet.playerInfos.add(new PlayerInfoPacket.RemovePlayer(this.getUuid()));
+
+        return packet;
     }
 
-    public void lookAt(Player target) {
-        Pos direction = this.pos.withDirection(target.getPosition().sub(this.pos));
+    public PlayerInfoPacket generateAddPlayer() {
+        PlayerInfoPacket packet = new PlayerInfoPacket(PlayerInfoPacket.Action.ADD_PLAYER);
+        PlayerInfoPacket.AddPlayer playerInfo = new PlayerInfoPacket.AddPlayer(this.getUuid(), this.getUsername(), GameMode.CREATIVE, 0);
 
-        PacketUtils.sendPacket(target, new EntityRotationPacket(this.npcEntityId, direction.yaw(), direction.pitch(), false));
-        PacketUtils.sendPacket(target, new EntityHeadLookPacket(this.npcEntityId, direction.yaw()));
+        playerInfo.properties.add(new PlayerInfoPacket.AddPlayer.Property("textures", this.getPlayerSkin().getTextures(), this.getPlayerSkin().getSignature()));
+        packet.playerInfos.add(playerInfo);
+
+        return packet;
     }
+
 }
