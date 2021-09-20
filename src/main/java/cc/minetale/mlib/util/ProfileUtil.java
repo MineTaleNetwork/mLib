@@ -11,11 +11,13 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class ProfileUtil {
     private ProfileUtil() {}
 
+    private static Map<Player, Profile> assignedProfiles = new ConcurrentHashMap<>();
     @Getter private static String TAG_KEY = "profile";
 
     /**
@@ -35,7 +37,7 @@ public class ProfileUtil {
      *                      {@code onlyMetadata} needs to be set to {@code false} for this to take effect.
      */
     public static CompletableFuture<Profile> getAssociatedProfile(Player player, boolean onlyMetadata, boolean autoAssociate) {
-        Profile profile = player.getTag(Tag.Structure(TAG_KEY, new ProfileTagSerializer()));
+        Profile profile = assignedProfiles.get(player);
 
         if(profile == null && !onlyMetadata) {
             var future = Profile.getProfile(player.getUsername(), player.getUuid());
@@ -70,7 +72,7 @@ public class ProfileUtil {
         Map<Player, Profile> profiles = new HashMap<>();
 
         for(Player player : players) {
-            Profile profile = player.getTag(Tag.Structure(TAG_KEY, new ProfileTagSerializer()));
+            Profile profile = assignedProfiles.get(player);
 
             if(profile != null) {
                 profiles.put(player, profile);
@@ -224,14 +226,18 @@ public class ProfileUtil {
     }
 
     /**
-     * Associates a profile to a player (assigns the profile as player's metadata).
+     * Associates a profile to a player.
      */
     public static void associateProfile(Player player, Profile profile) {
-        player.setTag(Tag.Structure(TAG_KEY, new ProfileTagSerializer()), profile);
+        assignedProfiles.put(player, profile);
+    }
+
+    public static void dissociateProfile(Player player) {
+        assignedProfiles.remove(player);
     }
 
     public static boolean isAnyProfileAssociated(Player player) {
-        return player.hasTag(Tag.Structure(TAG_KEY, new ProfileTagSerializer()));
+        return assignedProfiles.containsKey(player);
     }
 
     public static Player getPlayerFromProfile(@Nullable Collection<? extends Player> players,
