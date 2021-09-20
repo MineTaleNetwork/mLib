@@ -87,6 +87,10 @@ public class HologramLine extends HologramComponent {
         player.sendPacket(packet);
     }
 
+    public static HologramLine of(Component component) {
+        return new HologramLine(component);
+    }
+
     public static HologramLine empty() {
         return new HologramLine(Component.text(" "));
     }
