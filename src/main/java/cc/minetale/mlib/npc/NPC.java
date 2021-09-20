@@ -1,5 +1,7 @@
 package cc.minetale.mlib.npc;
 
+import cc.minetale.mlib.hologram.Hologram;
+import cc.minetale.mlib.hologram.component.HologramComponent;
 import cc.minetale.mlib.mLib;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,17 +24,24 @@ import java.util.function.Consumer;
 @Getter @Setter
 public class NPC extends LivingEntity {
 
-    private Pos spawnPosition;
+    private Pos position;
     private PlayerSkin playerSkin;
+    private Hologram hologram;
     private String username;
     private Consumer<NPCInteraction> interaction;
 
-    public NPC(@NotNull Instance instance, @NotNull Pos spawnPosition, @NotNull PlayerSkin playerSkin, @NotNull Consumer<NPCInteraction> interaction) {
+    public NPC(@NotNull Instance instance, @NotNull Pos position, @NotNull PlayerSkin playerSkin, @NotNull Consumer<NPCInteraction> interaction, HologramComponent... components) {
         super(EntityType.PLAYER);
 
-        this.spawnPosition = spawnPosition;
+        this.position = position;
         this.playerSkin = playerSkin;
         this.interaction = interaction;
+
+        this.hologram = new Hologram(instance, new Pos(position).add(0.0, 1.5, 0.0), false);
+
+        for(HologramComponent component : components) {
+            this.hologram.append(component);
+        }
 
         this.username = RandomStringUtils.randomAlphanumeric(8);
 
@@ -57,7 +66,8 @@ public class NPC extends LivingEntity {
 
         this.setAutoViewable(false);
 
-        this.setInstance(instance, spawnPosition);
+        this.setInstance(instance, position);
+        this.hologram.create();
     }
 
     @Override
@@ -92,11 +102,11 @@ public class NPC extends LivingEntity {
             if(this.viewers.contains(player) && !canSee) {
                 this.removeViewer(player);
             } else if(canSee) {
+                lookAt(player);
+
                 if (!this.viewers.contains(player)) {
                     this.addViewer(player);
                 }
-
-                this.lookAt(player);
             }
         }
     }

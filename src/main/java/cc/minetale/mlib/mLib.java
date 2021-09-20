@@ -1,6 +1,8 @@
 package cc.minetale.mlib;
 
 import cc.minetale.commonlib.CommonLib;
+import cc.minetale.mlib.command.SpawnHologramCommand;
+import cc.minetale.mlib.command.SpawnNPCCommand;
 import cc.minetale.mlib.config.mLibConfig;
 import cc.minetale.mlib.fabric.Fabric;
 import cc.minetale.mlib.npc.NPC;
@@ -56,6 +58,9 @@ public class mLib extends Extension {
         );
 
         npcTeam.setNameTagVisibility(TeamsPacket.NameTagVisibility.NEVER);
+
+        MinecraftServer.getCommandManager().register(new SpawnNPCCommand());
+        MinecraftServer.getCommandManager().register(new SpawnHologramCommand());
 
         this.fabric = new Fabric();
 
