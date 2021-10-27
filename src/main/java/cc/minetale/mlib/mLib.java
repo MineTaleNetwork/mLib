@@ -22,8 +22,6 @@ import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.EventFilter;
 import net.minestom.server.event.EventNode;
-import net.minestom.server.event.player.PlayerChatEvent;
-import net.minestom.server.event.player.PlayerDisconnectEvent;
 import net.minestom.server.event.player.PlayerEntityInteractEvent;
 import net.minestom.server.event.trait.EntityEvent;
 import net.minestom.server.extensions.Extension;
@@ -32,7 +30,6 @@ import net.minestom.server.scoreboard.Team;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 
 @Getter
 public class mLib extends Extension {

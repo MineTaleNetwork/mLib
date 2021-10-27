@@ -1,6 +1,6 @@
 package cc.minetale.mlib.event;
 
-import cc.minetale.commonlib.modules.profile.Profile;
+import cc.minetale.commonlib.profile.Profile;
 import lombok.Getter;
 import net.minestom.server.event.Event;
 import org.jetbrains.annotations.NotNull;
