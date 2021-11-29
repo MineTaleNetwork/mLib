@@ -6,7 +6,6 @@ import lombok.Getter;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.EventDispatcher;
-import net.minestom.server.tag.Tag;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;

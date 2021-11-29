@@ -1,8 +1,6 @@
 package cc.minetale.mlib;
 
 import cc.minetale.commonlib.CommonLib;
-import cc.minetale.mlib.command.SpawnHologramCommand;
-import cc.minetale.mlib.command.SpawnNPCCommand;
 import cc.minetale.mlib.config.mLibConfig;
 import cc.minetale.mlib.fabric.Fabric;
 import cc.minetale.mlib.npc.NPC;
@@ -22,6 +20,7 @@ import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.EventFilter;
 import net.minestom.server.event.EventNode;
+import net.minestom.server.event.inventory.PlayerInventoryItemChangeEvent;
 import net.minestom.server.event.player.PlayerEntityInteractEvent;
 import net.minestom.server.event.trait.EntityEvent;
 import net.minestom.server.extensions.Extension;
@@ -56,9 +55,6 @@ public class mLib extends Extension {
         );
 
         npcTeam.setNameTagVisibility(TeamsPacket.NameTagVisibility.NEVER);
-
-        MinecraftServer.getCommandManager().register(new SpawnNPCCommand());
-        MinecraftServer.getCommandManager().register(new SpawnHologramCommand());
 
         this.fabric = new Fabric();
 
@@ -98,11 +94,9 @@ public class mLib extends Extension {
                 .addListener(PlayerEntityInteractEvent.class, event -> {
                     Entity target = event.getTarget();
 
-                    if (!(target instanceof NPC)) {
+                    if (!(target instanceof NPC npc)) {
                         return;
                     }
-
-                    NPC npc = (NPC) target;
 
                     if(event.getHand() == Player.Hand.MAIN)
                         npc.getInteraction().accept(new NPCInteraction(event.getPlayer(), npc));
