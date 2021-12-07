@@ -70,22 +70,22 @@ public class NPC extends LivingEntity {
         this.hologram.create();
     }
 
-    @Override
-    protected boolean addViewer0(@NotNull Player player) {
-        player.sendPacket(this.generateAddPlayer());
-
-        if (!super.addViewer0(player)) {
-            return false;
-        } else {
-            lookAt(player);
-
-            MinecraftServer.getSchedulerManager().buildTask(() -> player.sendPacket(generateRemovePlayer()))
-                    .delay(Duration.of(20, TimeUnit.SERVER_TICK))
-                    .schedule();
-
-            return true;
-        }
-    }
+//    @Override
+//    protected boolean addViewer0(@NotNull Player player) {
+//        player.sendPacket(this.generateAddPlayer());
+//
+//        if (!super.addViewer0(player)) {
+//            return false;
+//        } else {
+//            lookAt(player);
+//
+//            MinecraftServer.getSchedulerManager().buildTask(() -> player.sendPacket(generateRemovePlayer()))
+//                    .delay(Duration.of(20, TimeUnit.SERVER_TICK))
+//                    .schedule();
+//
+//            return true;
+//        }
+//    }
 
     @Override
     public void tick(long time) {

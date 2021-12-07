@@ -1,13 +1,11 @@
 package cc.minetale.mlib;
 
 import cc.minetale.commonlib.CommonLib;
-import cc.minetale.mlib.config.mLibConfig;
+import cc.minetale.commonlib.util.StringUtil;
 import cc.minetale.mlib.fabric.Fabric;
 import cc.minetale.mlib.npc.NPC;
 import cc.minetale.mlib.npc.NPCInteraction;
-import cc.minetale.mlib.util.FileUtil;
 import cc.minetale.pigeon.Pigeon;
-import cc.minetale.quartz.config.ConfigLoader;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mongodb.MongoClient;
@@ -20,15 +18,11 @@ import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.EventFilter;
 import net.minestom.server.event.EventNode;
-import net.minestom.server.event.inventory.PlayerInventoryItemChangeEvent;
 import net.minestom.server.event.player.PlayerEntityInteractEvent;
 import net.minestom.server.event.trait.EntityEvent;
 import net.minestom.server.extensions.Extension;
 import net.minestom.server.network.packet.server.play.TeamsPacket;
 import net.minestom.server.scoreboard.Team;
-
-import java.io.File;
-import java.io.IOException;
 
 @Getter
 public class mLib extends Extension {
@@ -36,7 +30,6 @@ public class mLib extends Extension {
     @Getter private static mLib mLib;
     @Getter private static Team npcTeam;
     private Gson gson;
-    private mLibConfig config;
     private Pigeon pigeon;
     private MongoClient mongoClient;
     private MongoDatabase mongoDatabase;
@@ -62,28 +55,12 @@ public class mLib extends Extension {
 
         MinecraftServer.getGlobalEventHandler().addChild(events());
 
-        mLibConfig config = null;
+        this.loadPigeon();
+        this.loadMongo();
 
-        try {
-            File configFile = FileUtil.getDataFolder(this, "config.json");
-            config = ConfigLoader.loadConfig(new mLibConfig(), configFile);
-        } catch (IOException e) {
-            e.printStackTrace();
-            MinecraftServer.stopCleanly();
-        }
+        this.commonLib = new CommonLib(this.mongoClient, this.mongoDatabase, this.pigeon);
 
-        this.config = config;
-
-        if(config != null) {
-            this.loadPigeon();
-            this.loadMongo();
-
-            this.commonLib = new CommonLib(this.mongoClient, this.mongoDatabase, this.pigeon);
-
-            this.pigeon.acceptDelivery();
-        } else {
-            System.out.println("Config was NULL in mLib");
-        }
+        this.pigeon.acceptDelivery();
     }
 
     @Override
@@ -104,16 +81,20 @@ public class mLib extends Extension {
     }
 
     private void loadPigeon() {
-        String host = this.config.getRabbitMqHost();
-        int port = this.config.getRabbitMqPort();
-
         this.pigeon = new Pigeon();
-        this.pigeon.initialize(host, port, this.config.getNetworkId(), this.config.getName());
+
+        this.pigeon.initialize(
+                System.getProperty("pigeonHost", "127.0.0.1"),
+                Integer.getInteger("pigeonPort", 5672),
+                System.getProperty("pigeonNetwork", "minetale"),
+                System.getProperty("pigeonUnit", StringUtil.generateId())
+        );
+
         this.pigeon.setupDefaultUpdater();
     }
 
     private void loadMongo() {
-        this.mongoClient = new MongoClient(this.config.getMongoHost(), this.config.getMongoPort());
-        this.mongoDatabase = this.mongoClient.getDatabase(this.config.getMongoDatabase());
+        this.mongoClient = new MongoClient(System.getProperty("mongoHost", "127.0.0.1"), Integer.getInteger("mongoPort", 27017));
+        this.mongoDatabase = this.mongoClient.getDatabase(System.getProperty("mongoDatabase", "MineTale"));
     }
 }

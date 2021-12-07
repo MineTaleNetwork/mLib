@@ -1,19 +1,12 @@
 package cc.minetale.mlib.util;
 
 import cc.minetale.commonlib.api.Punishment;
-import cc.minetale.commonlib.util.MC;
-import cc.minetale.commonlib.util.TimeUtil;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
 import net.minestom.server.color.DyeColor;
 import net.minestom.server.item.Material;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 public class ColorUtil {
