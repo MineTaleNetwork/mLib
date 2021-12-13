@@ -33,20 +33,20 @@ public class HologramEntity extends Entity {
     public void tick(long time) {
         super.tick(time);
 
-        Instance instance = this.instance;
-
-        if(this.isRemoved() || instance == null)
-            return;
-
-        for(Player player : instance.getPlayers()) {
-            boolean canSee = player.getDistance(this) <= 32;
-
-            if(this.viewers.contains(player) && !canSee) {
-                this.removeViewer(player);
-            } else if(canSee && !this.viewers.contains(player)) {
-                this.addViewer(player);
-            }
-        }
+//        Instance instance = this.instance;
+//
+//        if(this.isRemoved() || instance == null)
+//            return;
+//
+//        for(Player player : instance.getPlayers()) {
+//            boolean canSee = player.getDistance(this) <= 32;
+//
+//            if(this.viewers.contains(player) && !canSee) {
+//                this.removeViewer(player);
+//            } else if(canSee && !this.viewers.contains(player)) {
+//                this.addViewer(player);
+//            }
+//        }
 
 //        this.component.tick();
     }

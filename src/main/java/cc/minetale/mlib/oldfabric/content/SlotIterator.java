@@ -1,8 +1,9 @@
-package cc.minetale.mlib.fabric.content;
+package cc.minetale.mlib.oldfabric.content;
 
-import cc.minetale.mlib.fabric.ClickableItem;
-import cc.minetale.mlib.fabric.FabricInventory;
-import cc.minetale.mlib.fabric.ISlotIterator;
+import cc.minetale.mlib.fabric.inventory.FabricContents;
+import cc.minetale.mlib.oldfabric.ClickableItem;
+import cc.minetale.mlib.oldfabric.FabricInventory;
+import cc.minetale.mlib.oldfabric.ISlotIterator;
 import lombok.Getter;
 import lombok.Setter;
 

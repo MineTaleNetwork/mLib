@@ -2,7 +2,7 @@ package cc.minetale.mlib;
 
 import cc.minetale.commonlib.CommonLib;
 import cc.minetale.commonlib.util.StringUtil;
-import cc.minetale.mlib.fabric.Fabric;
+import cc.minetale.mlib.oldfabric.Fabric;
 import cc.minetale.mlib.npc.NPC;
 import cc.minetale.mlib.npc.NPCInteraction;
 import cc.minetale.pigeon.Pigeon;

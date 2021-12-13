@@ -1,6 +1,6 @@
-package cc.minetale.mlib.fabric;
+package cc.minetale.mlib.oldfabric;
 
-import cc.minetale.mlib.fabric.content.FabricContents;
+import cc.minetale.mlib.fabric.inventory.FabricContents;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.EventFilter;

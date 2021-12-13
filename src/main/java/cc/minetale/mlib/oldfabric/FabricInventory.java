@@ -1,7 +1,7 @@
-package cc.minetale.mlib.fabric;
+package cc.minetale.mlib.oldfabric;
 
-import cc.minetale.mlib.fabric.content.FabricContents;
-import cc.minetale.mlib.fabric.content.FabricProvider;
+import cc.minetale.mlib.fabric.inventory.FabricContents;
+import cc.minetale.mlib.fabric.inventory.FabricProvider;
 import cc.minetale.mlib.mLib;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;

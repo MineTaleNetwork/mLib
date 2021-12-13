@@ -1,8 +1,10 @@
-package cc.minetale.mlib.fabric.content;
+package cc.minetale.mlib.fabric.inventory;
 
-import cc.minetale.mlib.fabric.ClickableItem;
-import cc.minetale.mlib.fabric.FabricInventory;
-import cc.minetale.mlib.fabric.ISlotIterator;
+import cc.minetale.mlib.oldfabric.ClickableItem;
+import cc.minetale.mlib.oldfabric.FabricInventory;
+import cc.minetale.mlib.oldfabric.ISlotIterator;
+import cc.minetale.mlib.oldfabric.content.Pagination;
+import cc.minetale.mlib.oldfabric.content.SlotIterator;
 import lombok.Getter;
 import lombok.Setter;
 import net.minestom.server.MinecraftServer;
@@ -73,4 +75,5 @@ public class FabricContents {
 
         inventory.setItemStack(slot, item);
     }
+
 }

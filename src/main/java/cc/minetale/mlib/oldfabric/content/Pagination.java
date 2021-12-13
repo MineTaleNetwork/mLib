@@ -1,8 +1,8 @@
-package cc.minetale.mlib.fabric.content;
+package cc.minetale.mlib.oldfabric.content;
 
-import cc.minetale.mlib.fabric.ClickableItem;
-import cc.minetale.mlib.fabric.IPagination;
-import cc.minetale.mlib.fabric.ISlotIterator;
+import cc.minetale.mlib.oldfabric.ClickableItem;
+import cc.minetale.mlib.oldfabric.IPagination;
+import cc.minetale.mlib.oldfabric.ISlotIterator;
 
 import java.util.Arrays;
 

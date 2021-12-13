@@ -1,4 +1,4 @@
-package cc.minetale.mlib.fabric;
+package cc.minetale.mlib.oldfabric;
 
 import lombok.Getter;
 import net.minestom.server.event.inventory.InventoryPreClickEvent;
