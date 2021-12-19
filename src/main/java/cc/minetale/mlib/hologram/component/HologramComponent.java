@@ -15,12 +15,7 @@ public abstract class HologramComponent {
     private HologramEntity entity;
 
     public abstract void create(Instance instance, Pos position);
-
-    public abstract void update(Player player);
-
     public abstract double getHeight();
-
-    public abstract void tick();
 
 }
 

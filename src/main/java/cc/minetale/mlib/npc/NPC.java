@@ -1,7 +1,8 @@
 package cc.minetale.mlib.npc;
 
 import cc.minetale.mlib.hologram.component.HologramComponent;
-import cc.minetale.mlib.mLib;
+import cc.minetale.mlib.util.PacketUtil;
+import cc.minetale.mlib.util.TeamUtil;
 import lombok.Getter;
 import lombok.Setter;
 import net.kyori.adventure.util.TriState;
@@ -18,22 +19,21 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
-import java.util.Collections;
 import java.util.function.Consumer;
 
-@Getter @Setter
+@Getter
 public class NPC extends LivingEntity {
 
-    private Pos position;
-    private PlayerSkin playerSkin;
-    private TriState faceNearestPlayer;
-    private Consumer<NPCInteraction> interaction;
-    private HologramComponent[] holograms;
+    private final Pos position;
+    private final PlayerSkin playerSkin;
+    private final TriState faceNearestPlayer;
+    private final Consumer<NPCInteraction> interaction;
+    private HologramComponent[] holograms; // TODO
 
-    private String username;
+    private final String username;
 
-    private final PlayerInfoPacket removePlayerPacket;
-    private final PlayerInfoPacket addPlayerPacket;
+    private final PlayerInfoPacket addPlayerInfoPacket;
+    private final PlayerInfoPacket removePlayerInfoPacket;
 
     public NPC(Instance instance, Pos position, PlayerSkin playerSkin, TriState faceNearestPlayer, Consumer<NPCInteraction> interaction, HologramComponent... components) {
         super(EntityType.PLAYER);
@@ -45,32 +45,8 @@ public class NPC extends LivingEntity {
 
         this.username = RandomStringUtils.randomAlphanumeric(8);
 
-        this.removePlayerPacket = new PlayerInfoPacket(
-                PlayerInfoPacket.Action.REMOVE_PLAYER,
-                Collections.singletonList(
-                        new PlayerInfoPacket.RemovePlayer(this.getUuid())
-                )
-        );
-
-        this.addPlayerPacket = new PlayerInfoPacket(
-                PlayerInfoPacket.Action.ADD_PLAYER,
-                Collections.singletonList(
-                        new PlayerInfoPacket.AddPlayer(
-                                this.getUuid(),
-                                this.getUsername(),
-                                Collections.singletonList(
-                                        new PlayerInfoPacket.AddPlayer.Property(
-                                                "textures",
-                                                this.getPlayerSkin().textures(),
-                                                this.getPlayerSkin().signature()
-                                        )
-                                ),
-                                GameMode.CREATIVE,
-                                0,
-                                null
-                        )
-                )
-        );
+        this.addPlayerInfoPacket = PacketUtil.addPlayerInfoPacket(this.uuid, this.username, this.playerSkin);
+        this.removePlayerInfoPacket = PacketUtil.removePlayerInfoPacket(this.uuid);
 
         this.setNoGravity(true);
 
@@ -84,7 +60,7 @@ public class NPC extends LivingEntity {
         meta.setRightLegEnabled(true);
         meta.setRightSleeveEnabled(true);
 
-        var team = mLib.getNpcTeam();
+        var team = TeamUtil.NPC_TEAM;
         team.addMember(this.getUsername());
         this.setTeam(team);
 
@@ -95,13 +71,13 @@ public class NPC extends LivingEntity {
     public void updateNewViewer(@NotNull Player player) {
         var connection = player.getPlayerConnection();
 
-        connection.sendPacket(this.addPlayerPacket);
+        connection.sendPacket(this.addPlayerInfoPacket);
 
         if(this.faceNearestPlayer == TriState.FALSE) {
             this.swingMainHand();
         }
 
-        MinecraftServer.getSchedulerManager().buildTask(() -> player.sendPacket(this.removePlayerPacket))
+        MinecraftServer.getSchedulerManager().buildTask(() -> player.sendPacket(this.removePlayerInfoPacket))
                 .delay(Duration.of(100, TimeUnit.SERVER_TICK))
                 .schedule();
 
@@ -112,7 +88,7 @@ public class NPC extends LivingEntity {
     public void updateOldViewer(@NotNull Player player) {
         var connection = player.getPlayerConnection();
 
-        connection.sendPacket(this.removePlayerPacket);
+        connection.sendPacket(this.removePlayerInfoPacket);
 
         super.updateOldViewer(player);
     }

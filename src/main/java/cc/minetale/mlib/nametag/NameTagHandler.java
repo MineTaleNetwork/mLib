@@ -1,15 +1,14 @@
 package cc.minetale.mlib.nametag;
 
 import net.minestom.server.entity.Player;
+import net.minestom.server.scoreboard.Team;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public class NameTagHandler {
 
-    private static Map<Player, Set<NametagProvider>> nametagMap = new HashMap<>();
+    // TODO Add to Flame
+    private static Map<Player, TreeMap<Integer, Team>> nametagMap = new HashMap<>();
 
     public void reloadPlayer(Player player) {
         var nametagSet = nametagMap.get(player);
@@ -17,6 +16,10 @@ public class NameTagHandler {
         if(nametagSet != null) {
 
         }
+    }
+
+    public void addTeam(Team team, int weight) {
+
     }
 
 }

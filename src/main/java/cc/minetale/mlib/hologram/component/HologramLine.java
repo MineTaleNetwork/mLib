@@ -23,15 +23,8 @@ public class HologramLine extends HologramComponent {
     }
 
     @Override
-    public void tick() {
-        for(Player player : this.getEntity().getViewers()) {
-            this.update(player);
-        }
-    }
-
-    @Override
     public void create(Instance instance, Pos position) {
-        HologramEntity entity = new HologramEntity(this);
+        HologramEntity entity = new HologramEntity();
 
         ArmorStandMeta meta = (ArmorStandMeta) entity.getEntityMeta();
 
@@ -44,12 +37,7 @@ public class HologramLine extends HologramComponent {
 
         this.setEntity(entity);
 
-        this.getEntity().setInstance(instance, position);
-    }
-
-    @Override
-    public void update(Player player) {
-        setText(this.text, player);
+        entity.setInstance(instance, position);
     }
 
     @Override
@@ -60,19 +48,11 @@ public class HologramLine extends HologramComponent {
     public void setText(Component text) {
         this.text = text;
 
-        HologramEntity entity = this.getEntity();
-
-        if(entity == null || entity.isRemoved()) { return; }
-
         ArmorStandMeta meta = (ArmorStandMeta) this.getEntity().getEntityMeta();
 
         meta.setNotifyAboutChanges(false);
-
         meta.setCustomName(text);
-
         meta.setNotifyAboutChanges(true);
-
-        this.getEntity().getViewers().forEach(player -> setText(text, player));
     }
 
     public void setText(Component text, Player player) {
@@ -80,9 +60,9 @@ public class HologramLine extends HologramComponent {
 
         if(entity == null || entity.isRemoved()) { return; }
 
-        EntityMetaDataPacket packet = new EntityMetaDataPacket(this.getEntity().getEntityId(), List.of(
-                new Metadata.Entry<>((byte) 2, Metadata.OptChat(text)
-        )));
+        var packet = new EntityMetaDataPacket(this.getEntity().getEntityId(), List.of(
+                new Metadata.Entry<>((byte) 2, Metadata.OptChat(text))
+        ));
 
         player.sendPacket(packet);
     }

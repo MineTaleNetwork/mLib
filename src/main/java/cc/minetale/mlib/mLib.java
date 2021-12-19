@@ -2,7 +2,7 @@ package cc.minetale.mlib;
 
 import cc.minetale.commonlib.CommonLib;
 import cc.minetale.commonlib.util.StringUtil;
-import cc.minetale.mlib.oldfabric.Fabric;
+import cc.minetale.mlib.canvas.MenuHandler;
 import cc.minetale.mlib.npc.NPC;
 import cc.minetale.mlib.npc.NPCInteraction;
 import cc.minetale.pigeon.Pigeon;
@@ -11,8 +11,6 @@ import com.google.gson.GsonBuilder;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoDatabase;
 import lombok.Getter;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.Player;
@@ -21,35 +19,23 @@ import net.minestom.server.event.EventNode;
 import net.minestom.server.event.player.PlayerEntityInteractEvent;
 import net.minestom.server.event.trait.EntityEvent;
 import net.minestom.server.extensions.Extension;
-import net.minestom.server.network.packet.server.play.TeamsPacket;
-import net.minestom.server.scoreboard.Team;
 
 @Getter
 public class mLib extends Extension {
 
     @Getter private static mLib mLib;
-    @Getter private static Team npcTeam;
+    private MenuHandler menuHandler;
     private Gson gson;
     private Pigeon pigeon;
     private MongoClient mongoClient;
     private MongoDatabase mongoDatabase;
     private CommonLib commonLib;
-    private Fabric fabric;
 
     @Override
     public void initialize() {
         mLib = this;
 
-        npcTeam = MinecraftServer.getTeamManager().createTeam(
-                "NPC-TEAM",
-                Component.text("[NPC] ", NamedTextColor.DARK_GRAY),
-                NamedTextColor.DARK_GRAY,
-                Component.empty()
-        );
-
-        npcTeam.setNameTagVisibility(TeamsPacket.NameTagVisibility.NEVER);
-
-        this.fabric = new Fabric();
+        this.menuHandler = new MenuHandler();
 
         this.gson = new GsonBuilder().setPrettyPrinting().create();
 
