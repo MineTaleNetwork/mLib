@@ -1,37 +1,38 @@
 package cc.minetale.mlib.hologram.component;
 
-import cc.minetale.mlib.hologram.HologramEntity;
+import cc.minetale.mlib.hologram.EntityHologram;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import net.minestom.server.coordinate.Pos;
+import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.Metadata;
 import net.minestom.server.entity.Player;
 import net.minestom.server.entity.metadata.other.ArmorStandMeta;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.network.packet.server.play.EntityMetaDataPacket;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.Objects;
 
 @Getter
 public class HologramLine extends HologramComponent {
 
     private Component text;
 
-    public HologramLine(Component text) {
-        this.text = Objects.requireNonNullElseGet(text, Component::empty);
+    public HologramLine(@NotNull Component text) {
+        this.text = text;
     }
 
     @Override
     public void create(Instance instance, Pos position) {
-        HologramEntity entity = new HologramEntity();
+        EntityHologram entity = new EntityHologram();
 
         ArmorStandMeta meta = (ArmorStandMeta) entity.getEntityMeta();
 
         meta.setNotifyAboutChanges(false);
 
         meta.setCustomName(this.text);
-        meta.setCustomNameVisible(!this.text.equals(Component.empty()));
+        meta.setCustomNameVisible(!this.text.equals(Component.text(" ")));
 
         meta.setNotifyAboutChanges(true);
 
@@ -45,26 +46,28 @@ public class HologramLine extends HologramComponent {
         return 0.27;
     }
 
+    @Override
+    public Vec getDescendingOffset() {
+        return Vec.ZERO;
+    }
+
+    @Override
+    public Vec getAscendingOffset() {
+        return Vec.ZERO;
+    }
+
     public void setText(Component text) {
         this.text = text;
 
         ArmorStandMeta meta = (ArmorStandMeta) this.getEntity().getEntityMeta();
 
-        meta.setNotifyAboutChanges(false);
         meta.setCustomName(text);
-        meta.setNotifyAboutChanges(true);
     }
 
     public void setText(Component text, Player player) {
-        HologramEntity entity = this.getEntity();
+        var entry = new Metadata.Entry<>((byte) 2, Metadata.OptChat(text));
 
-        if(entity == null || entity.isRemoved()) { return; }
-
-        var packet = new EntityMetaDataPacket(this.getEntity().getEntityId(), List.of(
-                new Metadata.Entry<>((byte) 2, Metadata.OptChat(text))
-        ));
-
-        player.sendPacket(packet);
+        player.sendPacket(new EntityMetaDataPacket(this.getEntity().getEntityId(), List.of(entry)));
     }
 
     public static HologramLine of(Component component) {

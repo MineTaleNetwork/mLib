@@ -33,20 +33,27 @@ public class Hologram {
         return this;
     }
 
+    public Hologram append(HologramComponent... components) {
+        for (var component : components) {
+            this.append(component);
+        }
+
+        return this;
+    }
+
     public void create() {
         Pos origin = this.position;
 
         switch (this.direction) {
-            case ASCENDING -> {
+            case DESCENDING -> {
                 for(HologramComponent component : this.children) {
-                    component.create(this.instance, origin);
+                    component.create(this.instance, origin.add(component.getDescendingOffset()));
                     origin = origin.sub(0, component.getHeight(), 0);
                 }
             }
-            case DESCENDING -> {
-                for(var i = this.children.size() - 1; i >= 0; i--) {
-                    var component = this.children.get(i);
-                    component.create(this.instance, origin);
+            case ASCENDING -> {
+                for(HologramComponent component : this.children) {
+                    component.create(this.instance, origin.add(component.getAscendingOffset()));
                     origin = origin.add(0, component.getHeight(), 0);
                 }
             }

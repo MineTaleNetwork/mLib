@@ -9,8 +9,6 @@ import net.minestom.server.event.inventory.InventoryCloseEvent;
 import net.minestom.server.event.inventory.InventoryPreClickEvent;
 import net.minestom.server.event.player.PlayerDisconnectEvent;
 import net.minestom.server.event.trait.PlayerEvent;
-import net.minestom.server.timer.ExecutionType;
-import net.minestom.server.utils.time.Tick;
 
 import java.util.Map;
 import java.util.Optional;
@@ -25,15 +23,6 @@ public class MenuHandler {
         instance = this;
 
         MinecraftServer.getGlobalEventHandler().addChild(eventNode());
-        MinecraftServer.getSchedulerManager()
-                .buildTask(() -> {
-                    for (var menu : menus.values()) {
-                        menu.tick();
-                    }
-                })
-                .repeat(1, Tick.SERVER_TICKS)
-                .executionType(ExecutionType.ASYNC)
-                .schedule();
     }
 
     private EventNode<PlayerEvent> eventNode() {

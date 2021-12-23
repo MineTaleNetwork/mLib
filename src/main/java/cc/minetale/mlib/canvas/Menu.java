@@ -56,7 +56,6 @@ public abstract class Menu {
         this.updateTitle();
         this.setItems();
 
-        this.player.closeInventory();
         this.player.openInventory(this.inventory);
 
         this.registerMenu();
@@ -94,7 +93,7 @@ public abstract class Menu {
         }
     }
 
-    public abstract void tick();
+    public abstract void close();
 
     public void registerMenu() {
         MenuHandler.getInstance().register(this.player, this);
@@ -129,6 +128,7 @@ public abstract class Menu {
     }
 
     public void handleClose(Player player) {
+        this.close();
         MenuHandler.getInstance().unregister(player);
     }
 

@@ -7,11 +7,12 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.color.DyeColor;
 import net.minestom.server.item.Material;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class ColorUtil {
 
-    private static final ImmutableMap<NamedTextColor, DyeColor> CHAT_DYE_COLOR_MAP = Maps.immutableEnumMap((Map) ImmutableMap.builder()
+    private static final ImmutableMap<NamedTextColor, DyeColor> CHAT_DYE_COLOR_MAP = ImmutableMap.<NamedTextColor, DyeColor>builder()
             .put(NamedTextColor.AQUA, DyeColor.LIGHT_BLUE)
             .put(NamedTextColor.BLACK, DyeColor.BLACK)
             .put(NamedTextColor.BLUE, DyeColor.LIGHT_BLUE)
@@ -28,9 +29,9 @@ public class ColorUtil {
             .put(NamedTextColor.RED, DyeColor.RED)
             .put(NamedTextColor.WHITE, DyeColor.WHITE)
             .put(NamedTextColor.YELLOW, DyeColor.YELLOW)
-            .build()
-    );
-    private static final ImmutableMap<NamedTextColor, Material> CHAT_CONCRETE_COLOR_MAP = Maps.immutableEnumMap((Map) ImmutableMap.builder()
+            .build();
+
+    private static final Map<NamedTextColor, Material> CHAT_CONCRETE_COLOR_MAP = ImmutableMap.<NamedTextColor, Material>builder()
             .put(NamedTextColor.AQUA, Material.LIGHT_BLUE_CONCRETE)
             .put(NamedTextColor.BLACK, Material.BLACK_CONCRETE)
             .put(NamedTextColor.BLUE, Material.LIGHT_BLUE_CONCRETE)
@@ -47,8 +48,7 @@ public class ColorUtil {
             .put(NamedTextColor.RED, Material.RED_CONCRETE)
             .put(NamedTextColor.WHITE, Material.WHITE_CONCRETE)
             .put(NamedTextColor.YELLOW, Material.YELLOW_CONCRETE)
-            .build()
-    );
+            .build();
 
     public static DyeColor toDyeColor(NamedTextColor color) {
         return CHAT_DYE_COLOR_MAP.get(color);

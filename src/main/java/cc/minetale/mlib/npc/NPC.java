@@ -1,8 +1,11 @@
 package cc.minetale.mlib.npc;
 
+import cc.minetale.mlib.hologram.Hologram;
+import cc.minetale.mlib.hologram.HologramDirection;
 import cc.minetale.mlib.hologram.component.HologramComponent;
 import cc.minetale.mlib.util.PacketUtil;
 import cc.minetale.mlib.util.TeamUtil;
+import com.extollit.gaming.ai.path.HydrazinePathFinder;
 import lombok.Getter;
 import lombok.Setter;
 import net.kyori.adventure.util.TriState;
@@ -10,6 +13,7 @@ import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.*;
 import net.minestom.server.entity.metadata.PlayerMeta;
+import net.minestom.server.entity.pathfinding.Navigator;
 import net.minestom.server.instance.Instance;
 import net.minestom.server.network.packet.server.play.EntityHeadLookPacket;
 import net.minestom.server.network.packet.server.play.EntityRotationPacket;
@@ -28,20 +32,22 @@ public class NPC extends LivingEntity {
     private final PlayerSkin playerSkin;
     private final TriState faceNearestPlayer;
     private final Consumer<NPCInteraction> interaction;
-    private HologramComponent[] holograms; // TODO
+    private final HologramComponent[] hologramComponents;
+    private final Hologram hologram;
 
     private final String username;
 
     private final PlayerInfoPacket addPlayerInfoPacket;
     private final PlayerInfoPacket removePlayerInfoPacket;
 
-    public NPC(Instance instance, Pos position, PlayerSkin playerSkin, TriState faceNearestPlayer, Consumer<NPCInteraction> interaction, HologramComponent... components) {
+    public NPC(Instance instance, Pos position, PlayerSkin playerSkin, TriState faceNearestPlayer, Consumer<NPCInteraction> interaction, HologramComponent... hologramComponents) {
         super(EntityType.PLAYER);
 
         this.position = position;
         this.playerSkin = playerSkin;
         this.faceNearestPlayer = faceNearestPlayer;
         this.interaction = interaction;
+        this.hologramComponents = hologramComponents;
 
         this.username = RandomStringUtils.randomAlphanumeric(8);
 
@@ -60,8 +66,11 @@ public class NPC extends LivingEntity {
         meta.setRightLegEnabled(true);
         meta.setRightSleeveEnabled(true);
 
+        this.hologram = new Hologram(instance, position.add(0.0, 1.7, 0.0), HologramDirection.ASCENDING).append(hologramComponents);
+        this.hologram.create();
+
         var team = TeamUtil.NPC_TEAM;
-        team.addMember(this.getUsername());
+        team.addMember(this.username);
         this.setTeam(team);
 
         this.setInstance(instance, position);
