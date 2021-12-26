@@ -22,6 +22,7 @@ public abstract class Menu {
 
     private Pagination pagination;
     private Inventory inventory;
+    private boolean readOnly = true;
 
     public Menu(Player player, Component title, CanvasType type) {
         this.player = player;
@@ -52,9 +53,13 @@ public abstract class Menu {
         return fragments;
     }
 
-    public void openMenu() {
+    public void refresh() {
         this.updateTitle();
         this.setItems();
+    }
+
+    public void openMenu() {
+        this.refresh();
 
         this.player.openInventory(this.inventory);
 
@@ -96,7 +101,7 @@ public abstract class Menu {
     public abstract void close();
 
     public void registerMenu() {
-        MenuHandler.getInstance().register(this.player, this);
+        MenuHandler.register(this.player, this);
     }
 
     public void clearMenu(Inventory inventory) {
@@ -122,6 +127,8 @@ public abstract class Menu {
 
         var clickAction = fragment.clickAction();
 
+        event.setCancelled(this.readOnly);
+
         if (clickAction != null) {
             clickAction.accept(event);
         }
@@ -129,7 +136,7 @@ public abstract class Menu {
 
     public void handleClose(Player player) {
         this.close();
-        MenuHandler.getInstance().unregister(player);
+        MenuHandler.unregister(player);
     }
 
     public void updateTitle() {

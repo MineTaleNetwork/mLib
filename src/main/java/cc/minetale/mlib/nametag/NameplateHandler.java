@@ -12,9 +12,9 @@ import java.util.*;
 
 public class NameplateHandler {
 
-    private static final Map<UUID, TreeMap<Integer, Team>> nameplateMap = new HashMap<>();
+    private static final Map<UUID, TreeMap<Integer, Team>> nameplateMap = Collections.synchronizedMap(new HashMap<>());
 
-    public NameplateHandler() {
+    public static void init() {
         MinecraftServer.getGlobalEventHandler().addChild(eventNode());
     }
 
@@ -76,9 +76,9 @@ public class NameplateHandler {
         nameplateMap.remove(player.getUuid());
     }
 
-    private EventNode<PlayerEvent> eventNode() {
+    private static EventNode<PlayerEvent> eventNode() {
         return EventNode.type("nameplate", EventFilter.PLAYER)
-                .addListener(PlayerDisconnectEvent.class, event -> nameplateMap.remove(event.getPlayer().getUuid()));
+                .addListener(PlayerDisconnectEvent.class, event -> handleDisconnect(event.getPlayer()));
     }
 
 }

@@ -7,13 +7,14 @@ import net.minestom.server.MinecraftServer;
 import net.minestom.server.network.packet.server.play.TeamsPacket;
 import net.minestom.server.scoreboard.Team;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 public class TeamUtil {
 
     public static final Team NPC_TEAM;
-    public static final Map<Rank, Team> RANK_MAP = new HashMap<>();
+    public static final Map<Rank, Team> RANK_MAP = Collections.synchronizedMap(new HashMap<>());
 
     static {
         NPC_TEAM = MinecraftServer.getTeamManager().createTeam(

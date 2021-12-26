@@ -1,6 +1,4 @@
 package cc.minetale.mlib.canvas;
-
-import lombok.Getter;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.EventFilter;
@@ -10,53 +8,51 @@ import net.minestom.server.event.inventory.InventoryPreClickEvent;
 import net.minestom.server.event.player.PlayerDisconnectEvent;
 import net.minestom.server.event.trait.PlayerEvent;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class MenuHandler {
 
-    @Getter private static MenuHandler instance;
-    private final Map<Player, Menu> menus = new ConcurrentHashMap<>();
+    private static final Map<Player, Menu> menus = Collections.synchronizedMap(new HashMap<>());
 
-    public MenuHandler() {
-        instance = this;
-
+    public static void init() {
         MinecraftServer.getGlobalEventHandler().addChild(eventNode());
     }
 
-    private EventNode<PlayerEvent> eventNode() {
+    private static EventNode<PlayerEvent> eventNode() {
         return EventNode.type("canvas", EventFilter.PLAYER)
                 .addListener(InventoryPreClickEvent.class, event -> {
                     var player = event.getPlayer();
-                    var menu = this.findMenu(player);
+                    var menu = findMenu(player);
 
                     menu.ifPresent(value -> value.click(event));
                 })
                 .addListener(InventoryCloseEvent.class, event -> {
                     var player = event.getPlayer();
-                    var menu = this.findMenu(player);
+                    var menu = findMenu(player);
 
                     menu.ifPresent(value -> value.handleClose(player));
                 })
                 .addListener(PlayerDisconnectEvent.class, event -> {
                     var player = event.getPlayer();
-                    var menu = this.findMenu(player);
+                    var menu = findMenu(player);
 
                     menu.ifPresent(value -> value.handleClose(player));
                 });
     }
 
-    public void register(Player player, Menu menu) {
-        this.menus.put(player, menu);
+    public static void register(Player player, Menu menu) {
+        menus.put(player, menu);
     }
 
-    public void unregister(Player player) {
-        this.menus.remove(player);
+    public static void unregister(Player player) {
+        menus.remove(player);
     }
 
-    public Optional<Menu> findMenu(Player player) {
-        return Optional.ofNullable(this.menus.getOrDefault(player, null));
+    public static  Optional<Menu> findMenu(Player player) {
+        return Optional.ofNullable(menus.getOrDefault(player, null));
     }
 
 }

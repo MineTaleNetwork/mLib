@@ -1,13 +1,10 @@
 package cc.minetale.mlib.util;
 
-import cc.minetale.commonlib.api.Punishment;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.color.DyeColor;
 import net.minestom.server.item.Material;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class ColorUtil {
@@ -56,16 +53,6 @@ public class ColorUtil {
 
     public static Material toConcrete(NamedTextColor color) {
         return CHAT_CONCRETE_COLOR_MAP.get(color);
-    }
-
-    public static NamedTextColor getPunishmentColor(Punishment punishment) {
-        switch (punishment.getType()) {
-            case BLACKLIST -> { return NamedTextColor.RED; }
-            case BAN -> { return NamedTextColor.GOLD; }
-            case MUTE -> { return NamedTextColor.GREEN; }
-            case WARN -> { return NamedTextColor.BLUE; }
-            default -> { return NamedTextColor.WHITE; }
-        }
     }
 
 }
