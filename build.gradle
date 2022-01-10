@@ -22,28 +22,31 @@ dependencies {
     implementation group: 'cc.minetale', name: 'Magma',     version: 'LATEST'
 }
 
-sourceCompatibility = 17
-targetCompatibility = 17
-
-java {
-    withJavadocJar()
-    withSourcesJar()
-}
+compileJava.options.encoding('UTF-8')
+javadoc.options.encoding('UTF-8')
 
 shadowJar {
-    classifier = null
+    archiveClassifier.set(null)
+}
+
+idea {
+    module {
+        downloadJavadoc = true
+        downloadSources = true
+    }
+}
+
+java {
+    withSourcesJar()
+    withJavadocJar()
 }
 
 publishing {
     publications {
-        shadow(MavenPublication) { publication ->
-            project.shadow.component(publication)
+        Library(MavenPublication) {
+            artifact sourcesJar
+            artifact javadocJar
+            artifact shadowJar
         }
     }
 }
-
-tasks.withType(Jar) {
-    destinationDirectory = file("../../Build")
-}
-
-task buildJar(dependsOn: ['publishToMavenLocal'])

@@ -12,10 +12,12 @@ public class Pagination {
     private int currentPage = 0;
 
     private int start, itemsPerPage;
+    private boolean titleUpdated;
 
-    public Pagination(int start, int itemsPerPage) {
+    public Pagination(int start, int itemsPerPage, boolean titleUpdated) {
         this.start = start;
         this.itemsPerPage = itemsPerPage;
+        this.titleUpdated = titleUpdated;
     }
 
     public Fragment[] getPageItems() {

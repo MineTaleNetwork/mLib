@@ -98,7 +98,7 @@ public abstract class Menu {
         }
     }
 
-    public abstract void close();
+    public void close() {}
 
     public void registerMenu() {
         MenuHandler.register(this.player, this);
@@ -140,7 +140,7 @@ public abstract class Menu {
     }
 
     public void updateTitle() {
-        if(this.pagination != null) {
+        if(this.pagination != null && this.pagination.isTitleUpdated()) {
             this.inventory.setTitle(this.title.append(Component.text(" (" + (pagination.getCurrentPage() + 1) + "/" + pagination.getPageCount() + ")")));
         } else {
             this.inventory.setTitle(this.title);
