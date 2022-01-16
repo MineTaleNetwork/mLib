@@ -28,7 +28,7 @@ public class TeamUtil {
 
         for(Rank rank : Rank.values()) {
             var team = MinecraftServer.getTeamManager().createTeam(
-                    rank.getWeight() + "-" + rank.getName(),
+                    rank.ordinal() + "-" + rank.getName(),
                     rank.getPrefix().append(Component.space()),
                     rank.getColor(),
                     Component.empty()
