@@ -14,36 +14,34 @@ public class MenuUtil {
     public static Fragment PREVIOUS_PAGE(Menu menu) {
         return Fragment.of(ItemStack.of(Material.GRAY_CARPET)
                 .withDisplayName(Component.text("Previous Page", Style.style(NamedTextColor.GRAY, TextDecoration.ITALIC.as(false)))), event -> {
-            var pagination = menu.getPagination();
-            var player = menu.getPlayer();
-
-            if(pagination.previousPage()) {
-                menu.setItems();
-                menu.updateTitle();
-                menu.getInventory().update(player);
-
-                SoundsUtil.playClickSound(player);
-            } else {
-                SoundsUtil.playErrorSound(player);
-            }
+//            var pagination = menu.getPagination();
+//            var player = menu.getPlayer();
+//
+//            if(pagination.previousPage()) {
+//                menu.setItems();
+//                menu.getInventory().update(player);
+//
+//                SoundsUtil.playClickSound(player);
+//            } else {
+//                SoundsUtil.playErrorSound(player);
+//            }
         });
     }
 
     public static Fragment NEXT_PAGE(Menu menu) {
         return Fragment.of(ItemStack.of(Material.GRAY_CARPET)
                 .withDisplayName(Component.text("Next Page", Style.style(NamedTextColor.GRAY, TextDecoration.ITALIC.as(false)))), event -> {
-            var pagination = menu.getPagination();
-            var player = menu.getPlayer();
-
-            if(pagination.nextPage()) {
-                menu.setItems();
-                menu.updateTitle();
-                menu.getInventory().update(player);
-
-                SoundsUtil.playClickSound(player);
-            } else {
-                SoundsUtil.playErrorSound(player);
-            }
+//            var pagination = menu.getPagination();
+//            var player = menu.getPlayer();
+//
+//            if(pagination.nextPage()) {
+//                menu.setItems();
+//                menu.getInventory().update(player);
+//
+//                SoundsUtil.playClickSound(player);
+//            } else {
+//                SoundsUtil.playErrorSound(player);
+//            }
         });
     }
 

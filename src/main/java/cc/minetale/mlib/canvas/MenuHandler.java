@@ -51,7 +51,7 @@ public class MenuHandler {
         menus.remove(player);
     }
 
-    public static  Optional<Menu> findMenu(Player player) {
+    public static Optional<Menu> findMenu(Player player) {
         return Optional.ofNullable(menus.getOrDefault(player, null));
     }
 

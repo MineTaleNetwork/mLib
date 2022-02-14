@@ -7,102 +7,72 @@ import net.minestom.server.entity.Player;
 import net.minestom.server.event.inventory.InventoryPreClickEvent;
 import net.minestom.server.inventory.Inventory;
 import net.minestom.server.item.ItemStack;
-import net.minestom.server.item.Material;
 
-@Getter @Setter
+import java.util.function.Consumer;
+
+@Getter
+@Setter
 public abstract class Menu {
 
-    private final Player player;
     private final Component title;
     private final CanvasType type;
 
-    private final Fragment[] fragments;
-    private FillingType filler;
-    private ItemStack fillerType = ItemStack.of(Material.GRAY_STAINED_GLASS_PANE).withDisplayName(Component.empty());
+    private final Fragment[] buttons;
+    private Filler filler;
 
-    private Pagination pagination;
-    private Inventory inventory;
+    private Consumer<Player> openAction = player -> {};
+    private Consumer<Player> closeAction = player -> {};
+    private Consumer<Player> updateAction = player -> {};
+
     private boolean readOnly = true;
+    private ItemStack fillerType = Filler.DEFAULT;
+    private Inventory inventory;
 
-    public Menu(Player player, Component title, CanvasType type) {
-        this.player = player;
+    public Menu(Component title, CanvasType type) {
         this.title = title;
         this.type = type;
 
-        this.fragments = new Fragment[this.type.getSize()];
-        this.inventory = new Inventory(this.type.getType(), this.title);
+        this.buttons = new Fragment[type.getSize()];
+        this.inventory = new Inventory(type.getType(), title);
     }
 
-    public void setFragment(int slot, Fragment fragment) {
-        this.fragments[slot] = fragment;
+    public void setButton(int slot, Fragment fragment) {
+        this.buttons[slot] = fragment;
+        this.inventory.setItemStack(slot, fragment.itemStack());
     }
 
-    public Fragment[] getFillerFragments() {
-        var fragments = new Fragment[this.type.getSize()];
-
-        if(this.filler != null) {
-            var fillers = filler.fillMenu(this);
-
-            for (int i = 0; i < fillers.length; i++) {
-                if (fillers[i] != null && this.fragments[i] == null) {
-                    this.fragments[i] = fillers[i];
-                }
-            }
-        }
-
-        return fragments;
-    }
-
-    public void refresh() {
-        this.updateTitle();
-        this.setItems();
-    }
-
-    public void openMenu() {
-        this.refresh();
-
-        this.player.openInventory(this.inventory);
-
-        this.registerMenu();
+    public void openMenu(Player player) {
+        setItems();
+        player.openInventory(inventory);
+        MenuHandler.register(player, this);
     }
 
     public void setItems() {
         this.clearMenu(this.inventory);
 
-        var fillerFragments = this.getFillerFragments();
+        var fragments = new Fragment[type.getSize()];
 
-        for (int i = 0; i < fillerFragments.length; i++) {
-            if (fillerFragments[i] != null) {
-                this.fragments[i] = fillerFragments[i];
+        // Fill background
+        if(filler != null) {
+            filler.fillMenu(fragments, fillerType);
+        }
+
+        // Overlay buttons on background
+        for(int i = 0; i < type.getSize(); i++) {
+            if(buttons[i] != null) {
+                fragments[i] = buttons[i];
             }
         }
 
-        if(this.pagination != null) {
-            int fragmentIndex = 0;
-            var fragments = this.pagination.getPageItems();
-
-            for (int index = this.pagination.getStart(); index < this.getType().getSize() - 1; index++) {
-                if (fragmentIndex < fragments.length) {
-                    if(this.fragments[index] == null || this.fragments[index].itemStack() != this.fillerType) {
-                        this.fragments[index] = fragments[fragmentIndex];
-                        fragmentIndex++;
-                    }
-                }
-            }
-        }
-
-        for(int index = 0; index < this.fragments.length; index++) {
-            if (this.fragments[index] != null) {
-                this.inventory.setItemStack(index, this.fragments[index].itemStack());
+        // Set inventory
+        for(int i = 0; i < fragments.length; i++) {
+            if (fragments[i] != null) {
+                inventory.setItemStack(i, fragments[i].itemStack());
             }
         }
     }
 
     public void close() {}
-
-    public void registerMenu() {
-        MenuHandler.register(this.player, this);
-    }
 
     public void clearMenu(Inventory inventory) {
         if(inventory != null) {
@@ -118,33 +88,28 @@ public abstract class Menu {
             return;
         }
 
-        var fragment = this.fragments[event.getSlot()];
+        var fragment = buttons[event.getSlot()];
 
         if (fragment == null) {
             event.setCancelled(true);
             return;
         }
 
-        var clickAction = fragment.clickAction();
-
         event.setCancelled(this.readOnly);
 
-        if (clickAction != null) {
-            clickAction.accept(event);
-        }
+        var clickAction = fragment.clickAction();
+
+        if (clickAction != null) { clickAction.accept(event); }
     }
 
     public void handleClose(Player player) {
         this.close();
+
         MenuHandler.unregister(player);
     }
 
-    public void updateTitle() {
-        if(this.pagination != null && this.pagination.isTitleUpdated()) {
-            this.inventory.setTitle(this.title.append(Component.text(" (" + (pagination.getCurrentPage() + 1) + "/" + pagination.getPageCount() + ")")));
-        } else {
-            this.inventory.setTitle(this.title);
-        }
+    public static void open(Menu menu, Player player) {
+        menu.openMenu(player);
     }
 
 }
