@@ -1,5 +1,9 @@
-package cc.minetale.mlib.canvas;
+package cc.minetale.mlib.canvas.template;
 
+import cc.minetale.mlib.canvas.CanvasType;
+import cc.minetale.mlib.canvas.Filler;
+import cc.minetale.mlib.canvas.Fragment;
+import cc.minetale.mlib.canvas.MenuHandler;
 import lombok.Getter;
 import lombok.Setter;
 import net.kyori.adventure.text.Component;
@@ -8,27 +12,24 @@ import net.minestom.server.event.inventory.InventoryPreClickEvent;
 import net.minestom.server.inventory.Inventory;
 import net.minestom.server.item.ItemStack;
 
-import java.util.function.Consumer;
-
 @Getter
 @Setter
 public abstract class Menu {
 
+    private final Player player;
     private final Component title;
     private final CanvasType type;
 
     private final Fragment[] buttons;
     private Filler filler;
 
-    private Consumer<Player> openAction = player -> {};
-    private Consumer<Player> closeAction = player -> {};
-    private Consumer<Player> updateAction = player -> {};
-
+    private long tick = 0;
     private boolean readOnly = true;
     private ItemStack fillerType = Filler.DEFAULT;
     private Inventory inventory;
 
-    public Menu(Component title, CanvasType type) {
+    public Menu(Player player, Component title, CanvasType type) {
+        this.player = player;
         this.title = title;
         this.type = type;
 
@@ -41,7 +42,7 @@ public abstract class Menu {
         this.inventory.setItemStack(slot, fragment.itemStack());
     }
 
-    public void openMenu(Player player) {
+    private void openMenu() {
         setItems();
         player.openInventory(inventory);
         MenuHandler.register(player, this);
@@ -72,7 +73,14 @@ public abstract class Menu {
         }
     }
 
+    public void tick() {
+        tick++;
+        update();
+    }
+
+    public void open() {}
     public void close() {}
+    public void update() {}
 
     public void clearMenu(Inventory inventory) {
         if(inventory != null) {
@@ -103,13 +111,12 @@ public abstract class Menu {
     }
 
     public void handleClose(Player player) {
-        this.close();
-
+        close();
         MenuHandler.unregister(player);
     }
 
-    public static void open(Menu menu, Player player) {
-        menu.openMenu(player);
+    public static void openMenu(Menu menu) {
+        menu.openMenu();
     }
 
 }

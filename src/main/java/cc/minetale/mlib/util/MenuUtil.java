@@ -1,7 +1,7 @@
 package cc.minetale.mlib.util;
 
 import cc.minetale.mlib.canvas.Fragment;
-import cc.minetale.mlib.canvas.Menu;
+import cc.minetale.mlib.canvas.template.Menu;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;

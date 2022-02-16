@@ -1,4 +1,6 @@
 package cc.minetale.mlib.canvas;
+
+import cc.minetale.mlib.canvas.template.Menu;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.EventFilter;
@@ -7,6 +9,8 @@ import net.minestom.server.event.inventory.InventoryCloseEvent;
 import net.minestom.server.event.inventory.InventoryPreClickEvent;
 import net.minestom.server.event.player.PlayerDisconnectEvent;
 import net.minestom.server.event.trait.PlayerEvent;
+import net.minestom.server.timer.ExecutionType;
+import net.minestom.server.utils.time.Tick;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -18,6 +22,15 @@ public class MenuHandler {
     private static final Map<Player, Menu> menus = Collections.synchronizedMap(new HashMap<>());
 
     public static void init() {
+        MinecraftServer.getSchedulerManager()
+                .buildTask(() -> {
+                    for (var menu : menus.values()) {
+                        menu.tick();
+                    }
+                }).executionType(ExecutionType.ASYNC)
+                .repeat(1, Tick.SERVER_TICKS)
+                .schedule();
+
         MinecraftServer.getGlobalEventHandler().addChild(eventNode());
     }
 

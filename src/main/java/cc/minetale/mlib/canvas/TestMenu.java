@@ -1,23 +1,34 @@
 package cc.minetale.mlib.canvas;
 
+import cc.minetale.commonlib.cache.RequestCache;
+import cc.minetale.mlib.canvas.template.PaginatedMenu;
 import net.kyori.adventure.text.Component;
+import net.minestom.server.entity.Player;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
+import net.minestom.server.item.metadata.PlayerHeadMeta;
 
-public class TestMenu extends Menu {
+import java.util.concurrent.CompletableFuture;
 
-    public TestMenu() {
-        super(Component.text("Friend Requests"), CanvasType.SIX_ROW);
+public class TestMenu extends PaginatedMenu {
 
-        setFiller(Filler.BORDER);
+    public TestMenu(Player player) {
+        super(player, Component.text("Friend Requests"), CanvasType.SIX_ROW, new Fragment[0]);
 
-        setButton(1, Fragment.empty(ItemStack.of(Material.DIAMOND)));
+        CompletableFuture.runAsync(() -> {
+            var outgoing = RequestCache.getFriendRequest().getOutgoing(player.getUuid()).stream().toList();
+            var fragments = new Fragment[outgoing.size()];
 
-        setButton(2, Fragment.of(ItemStack.of(Material.DIAMOND), event -> {
-            event.getPlayer().closeInventory();
-        }));
+            for (int i = 0; i < fragments.length; i++) {
+                var request = outgoing.get(i);
 
-        setCloseAction(player -> player.sendMessage("You closed the menu!"));
+                fragments[i] = Fragment.of(ItemStack.of(Material.PLAYER_HEAD)
+                        .withMeta(PlayerHeadMeta.class, meta -> meta.skullOwner(request.target())), event -> {});
+            }
+
+            getPagination().setItems(fragments);
+            setPaginatedItems();
+        });
     }
 
 }
