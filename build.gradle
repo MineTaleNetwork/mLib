@@ -19,7 +19,6 @@ dependencies {
 
     compileOnly    group: 'cc.minetale', name: 'Quartz',    version: 'LATEST'
     implementation group: 'cc.minetale', name: 'CommonLib', version: 'LATEST'
-    implementation group: 'cc.minetale', name: 'Magma',     version: 'LATEST'
 }
 
 compileJava.options.encoding('UTF-8')

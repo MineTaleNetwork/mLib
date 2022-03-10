@@ -37,8 +37,8 @@ public class NPC extends LivingEntity {
 
     private final String username;
 
-    private final PlayerInfoPacket addPlayerInfoPacket;
-    private final PlayerInfoPacket removePlayerInfoPacket;
+    private final PlayerInfoPacket cachedAddPlayerPacket;
+    private final PlayerInfoPacket cachedRemovePlayerPacket;
 
     public NPC(Instance instance, Pos position, PlayerSkin playerSkin, TriState faceNearestPlayer, Consumer<NPCInteraction> interaction, HologramComponent... hologramComponents) {
         super(EntityType.PLAYER);
@@ -49,14 +49,14 @@ public class NPC extends LivingEntity {
         this.interaction = interaction;
         this.hologramComponents = hologramComponents;
 
-        this.username = RandomStringUtils.randomAlphanumeric(8);
+        username = RandomStringUtils.randomAlphanumeric(8);
 
-        this.addPlayerInfoPacket = PacketUtil.addPlayerInfoPacket(this.uuid, this.username, this.playerSkin);
-        this.removePlayerInfoPacket = PacketUtil.removePlayerInfoPacket(this.uuid);
+        cachedAddPlayerPacket = PacketUtil.addPlayerInfoPacket(uuid, username, playerSkin);
+        cachedRemovePlayerPacket = PacketUtil.removePlayerInfoPacket(uuid);
 
-        this.setNoGravity(true);
+        setNoGravity(true);
 
-        var meta = new PlayerMeta(this, this.metadata);
+        var meta = new PlayerMeta(this, metadata);
 
         meta.setCapeEnabled(true);
         meta.setHatEnabled(true);
@@ -66,27 +66,27 @@ public class NPC extends LivingEntity {
         meta.setRightLegEnabled(true);
         meta.setRightSleeveEnabled(true);
 
-        this.hologram = new Hologram(instance, position.add(0.0, 1.7, 0.0), HologramDirection.ASCENDING).append(hologramComponents);
-        this.hologram.create();
+        hologram = new Hologram(instance, position.add(0.0, 1.7, 0.0), HologramDirection.ASCENDING).append(hologramComponents);
+        hologram.create();
 
         var team = TeamUtil.NPC_TEAM;
-        team.addMember(this.username);
-        this.setTeam(team);
+        team.addMember(username);
+        setTeam(team);
 
-        this.setInstance(instance, position);
+        setInstance(instance, position);
     }
 
     @Override
     public void updateNewViewer(@NotNull Player player) {
         var connection = player.getPlayerConnection();
 
-        connection.sendPacket(this.addPlayerInfoPacket);
+        connection.sendPacket(cachedAddPlayerPacket);
 
         if(this.faceNearestPlayer == TriState.FALSE) {
             this.swingMainHand();
         }
 
-        MinecraftServer.getSchedulerManager().buildTask(() -> player.sendPacket(this.removePlayerInfoPacket))
+        MinecraftServer.getSchedulerManager().buildTask(() -> player.sendPacket(cachedRemovePlayerPacket))
                 .delay(Duration.of(100, TimeUnit.SERVER_TICK))
                 .schedule();
 
@@ -97,7 +97,7 @@ public class NPC extends LivingEntity {
     public void updateOldViewer(@NotNull Player player) {
         var connection = player.getPlayerConnection();
 
-        connection.sendPacket(this.removePlayerInfoPacket);
+        connection.sendPacket(cachedRemovePlayerPacket);
 
         super.updateOldViewer(player);
     }
@@ -106,18 +106,18 @@ public class NPC extends LivingEntity {
     public void tick(long time) {
         super.tick(time);
 
-        if(this.faceNearestPlayer == TriState.TRUE) {
-            for(var player : this.viewers) {
-                this.lookAt(player);
+        if(faceNearestPlayer == TriState.TRUE) {
+            for(var player : viewers) {
+                lookAt(player);
             }
         }
     }
 
     public void lookAt(Player player) {
-        var direction = this.position.withDirection(player.getPosition().sub(this.position));
+        var direction = position.withDirection(player.getPosition().sub(position));
 
-        player.sendPacket(new EntityRotationPacket(this.getEntityId(), direction.yaw(), direction.pitch(), false));
-        player.sendPacket(new EntityHeadLookPacket(this.getEntityId(), direction.yaw()));
+        player.sendPacket(new EntityRotationPacket(getEntityId(), direction.yaw(), direction.pitch(), false));
+        player.sendPacket(new EntityHeadLookPacket(getEntityId(), direction.yaw()));
     }
 
 }
