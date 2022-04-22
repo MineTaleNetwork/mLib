@@ -1,6 +1,6 @@
 package cc.minetale.mlib.util;
 
-import cc.minetale.commonlib.grant.Rank;
+import cc.minetale.sodium.profile.grant.Rank;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.MinecraftServer;
@@ -26,9 +26,9 @@ public class TeamUtil {
 
         NPC_TEAM.setNameTagVisibility(TeamsPacket.NameTagVisibility.NEVER);
 
-        for(Rank rank : Rank.values()) {
+        for(var rank : Rank.values()) {
             var team = MinecraftServer.getTeamManager().createTeam(
-                    rank.ordinal() + "-" + rank.getName(),
+                    4 + (rank.ordinal() < 9 ? "0" : "") + rank.ordinal() + "-" + rank.getName(),
                     rank.getPrefix().append(Component.space()),
                     rank.getColor(),
                     Component.empty()

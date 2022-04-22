@@ -12,8 +12,7 @@ import net.minestom.server.event.inventory.InventoryPreClickEvent;
 import net.minestom.server.inventory.Inventory;
 import net.minestom.server.item.ItemStack;
 
-@Getter
-@Setter
+@Getter @Setter
 public abstract class Menu {
 
     private final Player player;
@@ -113,6 +112,7 @@ public abstract class Menu {
     public void handleClose(Player player) {
         close();
         MenuHandler.unregister(player);
+        player.closeInventory();
     }
 
     public static void openMenu(Menu menu) {

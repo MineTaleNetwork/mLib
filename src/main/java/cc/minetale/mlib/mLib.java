@@ -1,12 +1,11 @@
 package cc.minetale.mlib;
 
-import cc.minetale.commonlib.CommonLib;
 import cc.minetale.mlib.canvas.MenuHandler;
 import cc.minetale.mlib.nametag.NameplateHandler;
 import cc.minetale.mlib.npc.NPC;
 import cc.minetale.mlib.npc.NPCInteraction;
+import cc.minetale.sodium.Sodium;
 import net.minestom.server.MinecraftServer;
-import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.EventFilter;
 import net.minestom.server.event.EventNode;
@@ -22,7 +21,8 @@ public class mLib extends Extension {
 
         MenuHandler.init();
         NameplateHandler.init();
-        CommonLib.init();
+
+        Sodium.initializeSodium();
     }
 
     @Override
