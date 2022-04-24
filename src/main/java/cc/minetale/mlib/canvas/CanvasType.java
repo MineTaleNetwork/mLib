@@ -4,8 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.minestom.server.inventory.InventoryType;
 
-@Getter
-@AllArgsConstructor
+@Getter @AllArgsConstructor
 public enum CanvasType {
 
     ONE_ROW(InventoryType.CHEST_1_ROW),

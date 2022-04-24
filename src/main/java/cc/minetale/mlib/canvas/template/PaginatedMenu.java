@@ -22,11 +22,10 @@ public abstract class PaginatedMenu extends Menu {
 
     public PaginatedMenu(Player player, Component title, CanvasType type) {
         super(player, title, type);
-
-        initiliaze();
     }
 
-    protected void initiliaze() {
+    @Override
+    public void initialize() {
         var type = getType();
         var player = getPlayer();
 

@@ -41,14 +41,17 @@ public abstract class Menu {
         this.inventory.setItemStack(slot, fragment.itemStack());
     }
 
+    public void initialize() {}
+
     private void openMenu() {
+        initialize();
         setItems();
         player.openInventory(inventory);
         MenuHandler.register(player, this);
     }
 
     public void setItems() {
-        this.clearMenu(this.inventory);
+        clearMenu(inventory);
 
         var fragments = new Fragment[type.getSize()];
 

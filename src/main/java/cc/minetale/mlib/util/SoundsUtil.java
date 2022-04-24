@@ -7,7 +7,7 @@ import net.minestom.server.entity.Player;
 public class SoundsUtil {
 
     public static void playClickSound(Player player) {
-        player.playSound(Sound.sound(Key.key("ui.button.click"), Sound.Source.MASTER, 0.75F, 2.0F));
+        player.playSound(Sound.sound(Key.key("block.wooden_button.click_on"), Sound.Source.MASTER, 0.75F, 1.0F));
     }
 
     public static void playErrorSound(Player player) {
