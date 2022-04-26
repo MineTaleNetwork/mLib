@@ -25,9 +25,14 @@ public class NameplateHandler {
         }
 
         var treeMap = nameplateMap.get(player.getUuid());
-        var team = treeMap.lastEntry().getValue();
+        var entry = treeMap.lastEntry();
 
-        player.setTeam(team);
+        if(entry == null) {
+            player.setTeam(null);
+            return;
+        }
+
+        player.setTeam(entry.getValue());
     }
 
     public static void addProvider(Player player, NameplateProvider provider) {

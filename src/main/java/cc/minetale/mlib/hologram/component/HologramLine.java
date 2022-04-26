@@ -65,9 +65,9 @@ public class HologramLine extends HologramComponent {
     }
 
     public void setText(Component text, Player player) {
-        var entry = new Metadata.Entry<>((byte) 2, Metadata.OptChat(text));
-
-        player.sendPacket(new EntityMetaDataPacket(this.getEntity().getEntityId(), List.of(entry)));
+//        var entry = new Metadata.Entry<>((byte) 2, Metadata.OptChat(text));
+//
+//        player.sendPacket(new EntityMetaDataPacket(this.getEntity().getEntityId(), List.of(entry)));
     }
 
     public static HologramLine of(Component component) {

@@ -14,19 +14,15 @@ repositories {
 }
 
 dependencies {
-    compileOnly         group: 'org.projectlombok', name: 'lombok', version: '1.18.22'
-    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.22'
+    compileOnly("org.projectlombok:lombok:1.18.24")
+    annotationProcessor("org.projectlombok:lombok:1.18.24")
 
-    compileOnly    group: 'cc.minetale', name: 'Quartz',    version: 'LATEST'
-    implementation group: 'cc.minetale', name: 'Sodium', version: 'LATEST'
+    compileOnly("cc.minetale:Quartz:LATEST")
+    implementation("cc.minetale:Sodium:LATEST")
 }
 
 compileJava.options.encoding('UTF-8')
 javadoc.options.encoding('UTF-8')
-
-shadowJar {
-    archiveClassifier.set(null)
-}
 
 idea {
     module {
@@ -35,17 +31,25 @@ idea {
     }
 }
 
-java {
-    withSourcesJar()
-    withJavadocJar()
+shadowJar {
+    archiveClassifier.set(null)
 }
+
+setSourceCompatibility(JavaVersion.VERSION_17)
+setTargetCompatibility(JavaVersion.VERSION_17)
+
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
+shadowJar.finalizedBy(javadocJar, sourcesJar)
 
 publishing {
     publications {
-        Library(MavenPublication) {
-            artifact sourcesJar
-            artifact javadocJar
-            artifact shadowJar
+        shadow(MavenPublication) { publication ->
+            project.shadow.component(publication)
+            artifacts = [ shadowJar, javadocJar, sourcesJar ]
         }
     }
 }

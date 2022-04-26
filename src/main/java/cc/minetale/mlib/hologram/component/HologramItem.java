@@ -13,6 +13,7 @@ import net.minestom.server.network.packet.server.play.EntityMetaDataPacket;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Map;
 
 public class HologramItem extends HologramComponent {
 
@@ -58,9 +59,13 @@ public class HologramItem extends HologramComponent {
     }
 
     public void setHead(ItemStack itemStack, Player player) {
-        var entry = new Metadata.Entry<>((byte) 8, Metadata.Slot(itemStack));
-
-        player.sendPacket(new EntityMetaDataPacket(this.getEntity().getEntityId(), List.of(entry)));
+//
+//        var entry = Metadata.Slot(itemStack);
+//        var entry = new Metadata.Entry<>((byte) 8, Metadata.Slot(itemStack));
+//
+//        getEntity().setHelmet();
+//
+//        player.sendPacket(new EntityMetaDataPacket(this.getEntity().getEntityId(), Map.of()));
     }
 
     public static HologramItem of(ItemStack itemStack) {
